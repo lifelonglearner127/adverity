@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import FetchHistory
 
+from .models import StarWarCollection
 
-admin.site.register(FetchHistory)
+admin.site.register(StarWarCollection)

@@ -1,0 +1,73 @@
+<style>
+    .wrapper {
+        display: flex;
+        justify-content: space-between;
+    }
+    .right ul li {
+        float: left;
+        list-style: none;
+        margin-right: 10px;
+    }
+</style>
+<div class="wrapper">
+<div class="left">
+<table>
+    {% for row in table %}
+        <tr>
+            {% if forloop.first %}
+                {% for col in row %}
+                    <th>
+                        <a  class="btn btn-info pull-right"
+                            href="{% url 'fetch-detail' object.pk %}?to={{ characters }}">
+                            {{ col }}
+                        </a>
+                    </th>
+                {% endfor %}
+            {% else %}
+                {% for col in row %}
+                    <td>
+                        {{ col }}
+                    </td>
+                {% endfor %}
+        {% endif %}
+        </tr>
+    {% endfor %}
+</table>
+<a  class="btn btn-info pull-right"
+    href="{% url 'fetch-detail' object.pk %}?to={{ characters|add:10 }}">
+    Load more
+</a>
+</div>
+<div class="right">
+<ul>
+    {% for col in table.0 %}
+        <li>
+            <a  class="btn btn-info pull-right"
+                href="{% url 'fetch-detail' object.pk %}?to={{ characters }}&new_filter={{ col }}&filters={{ filters }}">
+                {{ col }}
+            </a>
+        </li>
+    {% endfor %}
+</ul>
+
+<table>
+    {% for row in aggregated_table %}
+        <tr>
+            {% if forloop.first %}
+                {% for col in row %}
+                    <th>
+                        {{ col }}
+                    </th>
+                {% endfor %}
+            {% else %}
+                {% for col in row %}
+                    <td>
+                        {{ col }}
+                    </td>
+                {% endfor %}
+        {% endif %}
+        </tr>
+    {% endfor %}
+</table>
+</div>
+</div>

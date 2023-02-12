@@ -1,11 +1,12 @@
 import asyncio
 import json
-import time
 import math
-from typing import Optional, Dict, Iterable
-from adverity.pipeline.adverity_types import PeopleAndPlanetAddress, StagingRepository
+import time
+from typing import Dict, Iterable, Optional
 
 from aiohttp import ClientSession
+
+from adverity.pipeline.adverity_types import PeopleAndPlanetAddress, StagingRepository
 
 PEOPLE_PAGE_URL = "https://swapi.dev/api/people/"
 
@@ -43,16 +44,15 @@ class ExtractService:
                 planet_addresses=planet_addresses,
             )
 
-    async def get_people_from_pages(self, start_page: Optional[int] = None, end_page: Optional[int] = None) -> PeopleAndPlanetAddress:
+    async def get_people_from_pages(
+        self, start_page: Optional[int] = None, end_page: Optional[int] = None
+    ) -> PeopleAndPlanetAddress:
         if start_page is None:
             start_page = 1
         if end_page is None:
             end_page = self.end_page
 
-        tasks = (
-            self.get_people_on_single_page(page_number)
-            for page_number in range(start_page, end_page)
-        )
+        tasks = (self.get_people_on_single_page(page_number) for page_number in range(start_page, end_page + 1))
         results = await asyncio.gather(*tasks, return_exceptions=True)
 
         people = []
@@ -63,10 +63,7 @@ class ExtractService:
                 people.extend(result.people)
                 planet_addresses.update(result.planet_addresses)
 
-        return PeopleAndPlanetAddress(
-            people=people,
-            planet_addresses=planet_addresses
-        )
+        return PeopleAndPlanetAddress(people=people, planet_addresses=planet_addresses)
 
     async def get_planet(self, url: str) -> Dict[str, str]:
         async with self.session.get(url) as resp:
@@ -84,7 +81,7 @@ class ExtractService:
 
         return ret
 
-    async def download_data(self) -> StagingRepository:
+    async def download_data_async(self) -> StagingRepository:
         people = []
         planet_addresses = set()
 
@@ -115,11 +112,15 @@ class ExtractService:
         )
 
 
-async def main():
+async def download_meta_async() -> StagingRepository:
     async with ClientSession() as session:
         service = ExtractService(session)
-        await service.download_data()
+        return await service.download_data_async()
 
 
-if __name__ == '__main__':
-    asyncio.run(main())
+def download_meta() -> StagingRepository:
+    return asyncio.run(download_meta_async())
+
+
+if __name__ == "__main__":
+    download_meta()

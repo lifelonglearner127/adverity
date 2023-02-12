@@ -16,9 +16,11 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
-from adverity.views import FetchHistoryListView
+from adverity.views import StarWarCollectionDetailView, StarWarCollectionListView, fetch
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('', FetchHistoryListView.as_view())
+    path("admin/", admin.site.urls),
+    path("starwars/fetch/", fetch, name="fetch"),
+    path("starwars/", StarWarCollectionListView.as_view(), name="fetch-history"),
+    path("starwars/<pk>/", StarWarCollectionDetailView.as_view(), name="fetch-detail"),
 ]
