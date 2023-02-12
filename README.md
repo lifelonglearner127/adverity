@@ -15,3 +15,5 @@ poetry shell
 python manage.py migrate
 python manage.py runserver
 ```
+
+Go to the http://127.0.0.1:8000/starwars/
